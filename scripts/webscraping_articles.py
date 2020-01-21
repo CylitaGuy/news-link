@@ -12,13 +12,10 @@ Script contains functions that are meant to scrape the CBC news website for
 article data.
 
 '''
-#Importing custom functions file
-import webscraping_funcs
-import numpy as np
-import requests
-from bs4 import BeautifulSoup
+#Importing custom functions for analysis
+from webscraping_funcs import ScrapeCover
+from webscraping_funcs import ScrapeArticles
 import pandas as pd
-from requests.exceptions import ConnectionError
 
 '''
 Script for scraping CBC news landing page for daily articles
@@ -73,7 +70,7 @@ cbc_data = ScrapeArticles(cbc_unique_stories)
 daily_export = df_store.append(cbc_data)
 
 #Writing daily export file to csv
-daily_export.to_csv('Jan_20_news.csv')
+daily_export.to_csv('Jan_21_news.csv')
 
 
 
