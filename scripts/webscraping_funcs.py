@@ -49,10 +49,15 @@ def ScrapeCover(url):
             return ('https://www.cbc.ca'+ link)
         else:
             return link
-        
+    
     #Creating complete list of full story urls
     complete_urls = list(map(replaceURL, coverpage_urls))
-   
+    
+    try:
+        #removing problematic link
+        complete_urls.remove('https://www.cbc.cahttps://cbc.radio-canada.ca/en/ombudsman/')
+    except (ValueError):
+        pass
     #Return the list of news link from the function
     return complete_urls
     
@@ -73,11 +78,14 @@ def ScrapeArticles(arts):
         #Requesting article link and creating content soup
         link = arts[link_no]
         #Adding in a pause in the code
-        time.sleep(3)
+        time.sleep(1)
         #Specify headers
         headers = {
                 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36'}
-        art = requests.get(link, headers = headers)
+        try:
+            art = requests.get(link, headers = headers)
+        except ConnectionError as e:
+            pass
         art_soup = BeautifulSoup(art.content, 'html5lib')
     
         #Add url to new list
@@ -92,18 +100,26 @@ def ScrapeArticles(arts):
         authname.append(author)
         
         #Finding and adding publication date
-        pub_time = art_soup.find('time', class_='timeStamp')['datetime']
+        try:
+            pub_time = art_soup.find('time', class_='timeStamp')['datetime']
+        except:
+            pub_time="N/A"
+            
         date.append(pub_time)
         
         #Finding and adding article title
-        art_title = art_soup.find('h1', class_='detailHeadline').get_text()
+        try:
+            art_title = art_soup.find('h1', class_='detailHeadline').get_text()
+        except:
+           art_title="N/A" 
+        
         title.append(art_title)
         
         #Finding and adding similar article links if present
         try: 
             s_links = art_soup.find_all('a', class_='similarLink')
             s_urls_temp = []
-            s_urls = []
+            s_urls=[]
             for similar in np.arange(0, len(s_links)):
                 linklist = s_links[similar]['href']
                 s_urls_temp.append(linklist)
@@ -117,25 +133,28 @@ def ScrapeArticles(arts):
         try:
             r_links=art_soup.find_all('a', class_='relatedLink')
             r_urls_temp = []
+            r.urls = []
             for related in np.arange(0, len(r_links)):
                 linkrlist = r_links[related]['href']
                 r_urls_temp.append(linkrlist)
                 r_urls = " ".join(r_urls_temp)
-                
         except:
             r_urls = "N/A"
         
         relalinks.append(r_urls)
         
         #Scraping the actual paragraphs of the story of interest
-        body = art_soup.find_all('div', class_='story')
-        x = body[0].find_all('p')
+        try:
+            body = art_soup.find_all('div', class_='story')
+            x = body[0].find_all('p')
     
-        list_paras = []
-        for para in  np.arange(0, len(x)):
-            paragraph = x[para].get_text()
-            list_paras.append(paragraph)
-            final_article =" ".join(list_paras)
+            list_paras = []
+            for para in  np.arange(0, len(x)):
+                paragraph = x[para].get_text()
+                list_paras.append(paragraph)
+                final_article =" ".join(list_paras)
+        except:
+            final_article = "N/A"
             
         maintext.append(final_article)
             
@@ -144,3 +163,6 @@ def ScrapeArticles(arts):
                   columns = ['author', 'date', 'title', 'maintext','mainurl','simlinks','relalinks'])
 
     return df
+
+
+
