@@ -16,7 +16,7 @@ import numpy as np
 import requests
 from bs4 import BeautifulSoup
 import time
-
+from requests.exceptions import ConnectionError
 
 ###########Func 1
 #Function for pulling all story urls from a website landing page
