@@ -16,22 +16,10 @@ from nltk.tokenize import word_tokenize
 import gensim
 import spacy
 import nltk
+from array import *
 
 #####Func 1
-#Function meant to isolate the first 30% of the cleaned story text (or sentances) for analysis
-
-def Clean30 (text):
-    #Split the text into individual words or sentances
-    text_split = text.split(" ")
-    #Take the first 30% of words included in the text body
-    First30 = text_split[0:len(text_split)//3]
-    #Join back the first 30
-    First30_str = " ".join(First30)
-    #Return the joined text
-    return First30_str
-
-#####Func 1
-#Function for creating the corpus of text that another story will be compared to
+#Processing the corpus for comparison and generating similarity indicies for a body of text
 
 def SimCorpCreate (corpora, directory, querydoc):
     #Creating empty list to store the tokenized words for comparison from docs
@@ -58,14 +46,37 @@ def SimCorpCreate (corpora, directory, querydoc):
     querytokens = word_tokenize(querydoc)
     query_doc_bow = dictionary.doc2bow(querytokens)
     
-    #Creating a list to story query cosine similarity scores
-    cosine_simscore = []
-    
     # perform a similarity query against the corpus
     query_doc_tf_idf = tf_idf[query_doc_bow]
     
     #Attatch to list for outputs
-    cosine_simscore.append(sims[query_doc_tf_idf])
-    
-    return cosine_simscore
+    sim_scores = sims[query_doc_tf_idf]
 
+    #Turn array into a list
+    sim_out = sim_scores.tolist()
+    
+    return sim_out
+
+###########Func2
+# Following function uses similarity scores to compute similarity metrics for top specified stores
+
+def StoryMatch (SimScores, originalDF, NumLinks = 10):
+    #Appending similarity scores to new dataframe
+    originalDF['sim_scores'] = SimScores
+    
+    #Sorting dataframe in ascending order based on similarity scores
+    sorted_news = originalDF.sort_values(by=['sim_scores'], ascending = False)
+    
+    #Getting index for story title column
+    title = originalDF.columns.get_loc("title")
+    
+    #Getting index for story url
+    mainurl = originalDF.columns.get_loc("mainurl")
+
+    #Getting index for similarity scores
+    sim = originalDF.columns.get_loc("sim_scores")
+    
+    #Isolating the specificed number of links (10 default)
+    topX = sorted_news.iloc[1:NumLinks, [title,mainurl, sim]]
+    #Function returns the top set of links for a story of interest
+    return topX
