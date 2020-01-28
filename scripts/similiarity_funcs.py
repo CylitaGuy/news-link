@@ -77,6 +77,55 @@ def StoryMatch (SimScores, originalDF, NumLinks = 10):
     sim = originalDF.columns.get_loc("sim_scores")
     
     #Isolating the specificed number of links (10 default)
-    topX = sorted_news.iloc[1:NumLinks, [title,mainurl, sim]]
+    topX = sorted_news.iloc[0:NumLinks, [title,mainurl, sim]]
     #Function returns the top set of links for a story of interest
     return topX
+
+###########Func3
+# Following function uses similarity scores to compute similarity metrics for top specified stores
+
+def StoryMatch_Val (SimScores, originalDF, NumLinks = 10):
+    #Appending similarity scores to new dataframe
+    originalDF['sim_scores'] = SimScores
+    
+    #Sorting dataframe in ascending order based on similarity scores
+    sorted_news = originalDF.sort_values(by=['sim_scores'], ascending = False)
+    
+    #Getting index for story title column
+    title = originalDF.columns.get_loc("title")
+    
+    #Getting index for story url
+    mainurl = originalDF.columns.get_loc("mainurl")
+    
+    #Getting url for similar story
+    sim1url = originalDF.columns.get_loc("sim1")
+
+    #Getting index for similarity scores
+    sim = originalDF.columns.get_loc("sim_scores")
+    
+    
+    #Isolating the specificed number of links (10 default)
+    topX = sorted_news.iloc[0:NumLinks, [title,mainurl, sim1url, sim]]
+    #Function returns the top set of links for a story of interest
+    return topX
+
+
+###########Func4
+# Following function will be called to pull similarity metrics 
+def Top10(TestScores, TestStory):
+    Top10 = TestScores.iloc[0:9]
+    InTen = Top10['sim1'].isin(pd.Series(TestStory['sim1']))
+    
+    if True in InTen:
+        output = 1
+    else:
+        output = 0
+    
+    return output
+
+###########Func5
+# Following function will be called to pull similarity metrics 
+def FindSimScore (TestScores, TestStory):
+    findsim = TestScores.loc[TestScores['mainurl'] == TestStory['sim1']]
+    output = findsim['sim_scores']
+    return output
