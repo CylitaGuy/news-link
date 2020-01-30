@@ -28,7 +28,7 @@ def recommendation_output():
 	some_input = request.args.get('user_input')       	 
   	 
 	# Case if empty
-	if some_input =="'":
+	if some_input =="":
 		return render_template("index.html",
                               	my_input = some_input,
                               	my_form_result="Empty")
