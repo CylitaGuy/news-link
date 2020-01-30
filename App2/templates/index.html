@@ -17,48 +17,44 @@
     <div class="grid-container">
       <div class="grid-x grid-padding-x">
         <div class="large-12 cell">
-          <h1>Welcome to News-Link</h1> 
+          <h1 class="text-center">Welcome to News-Link</h1> 
         </div>
       </div>
 
       <div class="grid-x grid-padding-x">
         <div class="large-12 cell">
           <div class="callout">
-            <h3>What is News-Link Anyway?</h3>
+            <h3 class="subheader">Your News Article Recommender</h3>
             
-            <p>News-link is a reccomendation engine for journalists working at large digital news publishers. Using NLP, News-Link provides journalits with a list previously published similar news stories. Links to these stories can then be easily inserted into a story that a journalist is currently writing, to provide their readers with additional, related news content. </p>
+            <p>News-link is a reccomendation engine for journalists working for digital news publishers. Using NLP, News-Link provides journalists with a list previously published similar news stories. Links to these stories can be easily inserted into a story that a journalist is currently writing, to provide readers with additional, related news content. </p>
             
-            <p>This build of New-Link compares your story of interest to a databse of >1500 news articles scraped from the CBC.ca.</p>
+            <p>This build of New-Link compares your story to a databse of >1500 news articles scraped from the CBC.ca.</p>
             
-            <p>Interested in learning more about News-Link's backend? Check out its <a href ='https://github.com/CylitaGuy/news-link'> GitHub Repository.</a> </p>
+            <p>Interested in learning more about News-Link's backend? Check out this <a href ='https://github.com/CylitaGuy/news-link'> GitHub Repository.</a> </p>
             </div>
             </div>
           </div>
         </div>
       </div>
         
-        <!-- TESTING -->
+        <!-- Story Entry Formatting -->
+      
       <div class="grid-x grid-padding-x">
-        <div class="large-12 cell">
-          <div class='callout alert'
-            <h5>Copy in Your Story Below:</h5> 
-          </div>       
-        </div>
       </div>
       <form action="/output" method="GET" id="user_input">
         <div class="grid-container">
           <div class="grid-x grid-padding-x">
             <div class="large-12 cell">
-                <label>Input Label</label>
+                <h5 class="subheader">Enter Your Story Here</h5>
                 <input type="text" id = "user_input" name='user_input' 
-                placeholder="e.g. Did you know wombats poop cubes?"/>
+                placeholder="e.g. Did you know wombats poop cubes? A news story about weird animals facts..."/>
 
                 <button type="button round" class="alert button" form="user_input">Get Links!</button>
               </div>
           </div>
         </div>
       </form>
-
+      
       {% if my_form_result=='Empty' %}
       <div class="row mt-4 justify-content-center">
           <blockquote>
@@ -67,14 +63,36 @@
           </blockquote>
       </div>
 
-      {% elif my_form_result=='NotEmpty' %}
-      
+      {% elif my_form_result=='Long' %}
+
+    <div class = 'grid-container'>
       <div class="grid-x grid-padding-x">
         <div class="large-12 cell">
-          <div class='callout alert'
-            <h5>We found something:</h5> 
-             <b>{{my_output}}</b>
-          </div>       
+            <h3 class="text-center"> Here's the story you entered:</h3> 
+             <p class="text-center">{{my_input}}</p>
+        </div>
+      </div>
+      <div class="callout alert">
+        <h3 class="text-center">Something to consider!</h3>
+        <p>It seems that the article you are writing is a bit on the longer side. Not all of your audience may make it to the end! Perhaps considering inserting some of these similar links ~1/3 of the way through your article. You can include some of the other's at the end! 
+        </p>
+      </div>
+
+      <div class="grid-x grid-padding-x">
+        {% for table in tables %}
+            {{ table|safe }}
+        {% endfor %}
+    </div>
+    </div>
+      
+      {% elif my_form_result=='NotEmpty' %}
+      <div class = 'grid-container'>
+      <div class="grid-x grid-padding-x">
+        <div class="large-12 cell">
+            <h3 class="text-center"> Here's the story you entered:</h3> 
+             
+             <p class="text-center">{{my_input}}</p>
+      
         </div>
       </div>
       
@@ -83,7 +101,8 @@
             {{ table|safe }}
         {% endfor %}
     </div>
-    
+    </div>
+
       {% else %}
       {% endif %}
 
