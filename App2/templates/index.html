@@ -46,13 +46,38 @@
           <div class="grid-x grid-padding-x">
             <div class="large-12 cell">
                 <label>Input Label</label>
-                <input type="text" placeholder="e.g. Did you know wombats poop cubes?"/>
+                <input type="text" id = "user_input" name='user_input' 
+                placeholder="e.g. Did you know wombats poop cubes?"/>
 
                 <button type="button round" class="alert button" form="user_input">Get Links!</button>
               </div>
           </div>
         </div>
       </form>
+
+      {% if my_form_result=='Empty' %}
+      <div class="row mt-4 justify-content-center">
+          <blockquote>
+            You didn't type anything!
+            <cite>Please try again</cite>
+          </blockquote>
+      </div>
+
+      {% elif my_form_result=='NotEmpty' %}
+      
+      <div class="grid-x grid-padding-x">
+        <div class="large-12 cell">
+          <div class='callout alert'
+            <h5>We found something:</h5> 
+             <b>{{my_output}}</b>
+          </div>       
+        </div>
+      </div>
+
+      {% else %}
+      {% endif %}
+
+
       </div>
     </div>
     <script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
