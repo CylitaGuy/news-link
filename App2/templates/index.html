@@ -1,0 +1,63 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foundation for Sites</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/foundation.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  
+  </head>
+  <body>
+    <div class="grid-container">
+      <div class="grid-x grid-padding-x">
+        <div class="large-12 cell">
+          <h1>Welcome to News-Link</h1> 
+        </div>
+      </div>
+
+      <div class="grid-x grid-padding-x">
+        <div class="large-12 cell">
+          <div class="callout">
+            <h3>What is News-Link Anyway?</h3>
+            
+            <p>News-link is a reccomendation engine for journalists working at large digital news publishers. Using NLP, News-Link provides journalits with a list previously published similar news stories. Links to these stories can then be easily inserted into a story that a journalist is currently writing, to provide their readers with additional, related news content. </p>
+            
+            <p>This build of New-Link compares your story of interest to a databse of >1500 news articles scraped from the CBC.ca.</p>
+            
+            <p>Interested in learning more about News-Link's backend? Check out its <a href ='https://github.com/CylitaGuy/news-link'> GitHub Repository.</a> </p>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        
+        <!-- TESTING -->
+      <div class="grid-x grid-padding-x">
+        <div class="large-12 cell">
+          <div class='callout alert'
+            <h5>Copy in Your Story Below:</h5> 
+          </div>       
+        </div>
+      </div>
+      <form action="/output" method="GET" id="user_input">
+        <div class="grid-container">
+          <div class="grid-x grid-padding-x">
+            <div class="large-12 cell">
+                <label>Input Label</label>
+                <input type="text" placeholder="e.g. Did you know wombats poop cubes?"/>
+
+                <button type="button round" class="alert button" form="user_input">Get Links!</button>
+              </div>
+          </div>
+        </div>
+      </form>
+      </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/vendor/jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor/what-input.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/vendor/foundation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  </body>
+</html>
