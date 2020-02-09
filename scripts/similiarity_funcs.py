@@ -26,10 +26,12 @@ from pyemd import emd
 from gensim.similarities import WmdSimilarity
 
 import spacy
-nlp = spacy.load("en_core_web_lg")
+import en_core_web_lg
+nlp = en_core_web_lg.load()
 
 import wmd
-nlp2 = spacy.load('en_core_web_lg', create_pipeline=wmd.WMD.create_spacy_pipeline)
+nlp2 = en_core_web_lg.load(create_pipeline=wmd.WMD.create_spacy_pipeline)
+
 nlp2.add_pipe(wmd.WMD.SpacySimilarityHook(nlp2), last=True)
 
 #Specifying the corpus that will be used
@@ -54,7 +56,9 @@ nlp2.add_pipe(wmd.WMD.SpacySimilarityHook(nlp2), last=True)
 
 #####Func 1
 #Processing the corpus for comparison and generating similarity indicies for a body of text
+    
 def SimCorpCreate (corpora, directory, querydoc):
+    
     #Creating empty list to store the tokenized words for comparison from docs
     token_comp = []
     
@@ -65,7 +69,7 @@ def SimCorpCreate (corpora, directory, querydoc):
     #Creating a dictionary
     dictionary = gensim.corpora.Dictionary(token_comp)
     
-    #Creating corpus of words usign the dictionary
+    #Creating corpus of words using the dictionary
     corpus = [dictionary.doc2bow(doc) for doc in token_comp]
     
     #Caclulating frequency–inverse document frequency
@@ -77,12 +81,12 @@ def SimCorpCreate (corpora, directory, querydoc):
     
     #Tokenizing query text and creating a dictionary
     querytokens = word_tokenize(querydoc)
-    query_doc_bow = dictionary.doc2bow(querytokens)
+    query_doc_bow = dictionary.doc2bow(querytokens) #converts to BOW format
     
     # perform a similarity query against the corpus
-    query_doc_tf_idf = tf_idf[query_doc_bow]
+    query_doc_tf_idf = tf_idf[query_doc_bow] 
     
-    #Attatch to list for outputs
+    #Attatch to list for output
     sim_scores = sims[query_doc_tf_idf]
 
     #Turn array into a list
@@ -90,8 +94,8 @@ def SimCorpCreate (corpora, directory, querydoc):
     
     return sim_out
 
-###########Func2
-# Following function uses similarity scores to compute similarity metrics for top specified stores
+###########Func 2
+# Function uses similarity scores to compute similarity metrics for top specified stores
 
 def StoryMatch (SimScores, originalDF, NumLinks = 10):
     #Appending similarity scores to new dataframe
@@ -111,11 +115,13 @@ def StoryMatch (SimScores, originalDF, NumLinks = 10):
     
     #Isolating the specificed number of links (10 default)
     topX = sorted_news.iloc[0:NumLinks, [title,mainurl, sim]]
+    
     #Function returns the top set of links for a story of interest
     return topX
 
-###########Func3
-# Following function uses similarity scores to compute similarity metrics for top specified stores
+###########Func 3
+#Function uses similarity scores to compute similarity metrics for top specified stores
+#Unlike above this function also returns similiar url (for validation)
 
 def StoryMatch_Val (SimScores, originalDF, NumLinks = 10):
     #Appending similarity scores to new dataframe
@@ -139,14 +145,20 @@ def StoryMatch_Val (SimScores, originalDF, NumLinks = 10):
     
     #Isolating the specificed number of links (10 default)
     topX = sorted_news.iloc[0:NumLinks, [title,mainurl, sim1url, sim]]
+    
     #Function returns the top set of links for a story of interest
     return topX
 
 
-###########Func4
-# Following function will be called to pull similarity metrics 
+###########Func 4
+# Following function will be used for validaion scripts
+#Function is meant to check if a journalist inserted story appears in the top 10
+#stories returned by my model
+    
 def Top10(TestScores, TestStory):
+    
     Top10 = TestScores.iloc[0:9]
+    
     InTen = Top10['sim1'].isin(pd.Series(TestStory['sim1']))
     
     if True in InTen:
@@ -156,24 +168,30 @@ def Top10(TestScores, TestStory):
     
     return output
 
-###########Func5
-# Following function will be called to pull similarity metrics 
+###########Func 5
+#Another validation function
+#Function will, for a story of interest search for a story inserted by a journalist
+#and will return the similarity metric of that story
+    
 def FindSimScore (TestScores, TestStory):
     findsim = TestScores.loc[TestScores['mainurl'] == TestStory['sim1']]
     output = findsim['sim_scores'].iloc[0]
     return output
 
-###########Func6
-# Following function will be called to pull similarity metrics 
+###########Func 6
+#Another validation function
+#Function will, for a story of interest search for a story inserted by a journalist
+#and will return the similarity metric of that story
+
 def FindSimScoreWMD (TestScores, TestStory):
     findsim = TestScores.loc[TestScores['mainurl'] == TestStory['sim1']]
     output = findsim['wmd_scores'].iloc[0]
     return output
 
 
-###########Func6
-#Following function will be called to compute word embeddings for just the corpus
-
+###########Func 7
+#Function will be called to compute GloVe embeddings
+    
 def GloveEmbeds (corpus):
 
     doc_vector = []
@@ -186,7 +204,10 @@ def GloveEmbeds (corpus):
     #Function retruns list of corpus word embeddings
     return doc_vector
 
-def GloVeCosine (querydoc, corpus_embeddings):
+###########Func 8
+#Function computes cosine similarity for GloVe embeddings
+    
+def GloVeCosine(querydoc, corpus_embeddings):
 
     #Calculates word embeddings for the story of interest
     query = nlp(querydoc)
@@ -202,18 +223,25 @@ def GloVeCosine (querydoc, corpus_embeddings):
     #retruning similairty scores
     return sim_scores
 
-def WMDEmbeds (corpus):
+###########Func 9
+#Following function will be called to compute GloVe embeddings, but for WMD
+#(Spacy english language model called in a different way)
+    
+def WMDEmbeds(corpus):
 
     doc_vectorWMD = [ ]
 
     #Calculates the GloVe Embeddings using the WMD pipeline in Spacy
     for doc in corpus['cleaned_text']:
-    WMDembbeddings = nlp2(doc)
-    doc_vectorWMD.append(WMDembbeddings)
+        WMDembbeddings = nlp2(doc)
+        doc_vectorWMD.append(WMDembbeddings)
 
     return doc_vectorWMD
 
-def GloVeWMD(corpus_embeddings, querydoc)
+###########Func 10
+#Function computes WMD for GloVe embeddings
+    
+def GloVeWMD(corpus_embeddings, querydoc):
     
     #Calculates word embeddings for the story of interest
     query = nlp2(querydoc)
@@ -230,14 +258,15 @@ def GloVeWMD(corpus_embeddings, querydoc)
     return sim_scores
 
 
-###########Func7
-#Use the WMD scores to order original dataframe
+###########Func 11
+#Function appends WMD scores to original dataframe and returns the lowest 10 results
 
 def EmbeddingMatch (scores, originalDF, NumLinks=10):
     #Appending similarity scores to new dataframe
     originalDF['wmd_scores'] = scores
     
     #Sorting dataframe in ascending order based on similarity scores
+    #Note, smaller WMD = better, so this list is sorted ascending (unlike cosine)
     sorted_news = originalDF.sort_values(by=['wmd_scores'], ascending = True)
     
     #Getting index for story title column
