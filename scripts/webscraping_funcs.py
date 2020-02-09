@@ -7,10 +7,10 @@ Created on Mon Jan 20 10:37:53 2020
 """
 
 '''
-Functions file for web scraping articles
+Functions file for web scraping articles from all major CBC landing pages
 
 '''
-#Required packages
+#Importing required packages
 import pandas as pd
 import numpy as np
 import requests
@@ -18,10 +18,11 @@ from bs4 import BeautifulSoup
 import time
 from requests.exceptions import ConnectionError
 
-###########Func 1
-#Function for pulling all story urls from a website landing page
+###########Function 1:
+#Function pulls all story urls from a website's landing page
 
 def ScrapeCover(url):
+    
     #Grab content from webpage of interest and convert to soup
     news_page = requests.get(url)
     news_soup = BeautifulSoup(news_page.content, 'html5lib')
@@ -38,9 +39,9 @@ def ScrapeCover(url):
         coverpage_urls.append(story_url)
     
     #Not all urls have the full proper website link, creating a function to check
-    def containsURL(str, set='https://www.cbc.ca'):
-        for c in set:
-            if c not in str: return 0
+    def containsURL(url, homelink='https://www.cbc.ca'):
+        for char in homelink: 
+            if char not in url: return 0
         return 1
     
     #Defining a function that assigns proper front portion of link if missing
@@ -54,16 +55,19 @@ def ScrapeCover(url):
     complete_urls = list(map(replaceURL, coverpage_urls))
     
     try:
-        #removing problematic link
+        #removing problematic link if present from the complete urls list
         complete_urls.remove('https://www.cbc.cahttps://cbc.radio-canada.ca/en/ombudsman/')
     except (ValueError):
+        #If problematic link not present, continue
         pass
     #Return the list of news link from the function
     return complete_urls
     
-#########Func 2
-#Function which requests specific details from article urls provide to it
+#########Function 2:
+#Function pulls specific details from an article url passed to it
+
 def ScrapeArticles(arts):
+    
     #Creating empty lists for article details that need to be stored
     authname =[]
     date = []
@@ -86,12 +90,13 @@ def ScrapeArticles(arts):
             art = requests.get(link, headers = headers)
         except ConnectionError as e:
             pass
+
         art_soup = BeautifulSoup(art.content, 'html5lib')
     
         #Add url to new list
         mainurl.append(link)
         
-        #Finding and adding authours
+        #Finding and adding authors
         try:
             author = art_soup.find('span', class_='authorText').get_text()
         except:
@@ -118,12 +123,15 @@ def ScrapeArticles(arts):
         #Finding and adding similar article links if present
         try: 
             s_links = art_soup.find_all('a', class_='similarLink')
+            
             s_urls_temp = []
+            
             s_urls=[]
+            
             for similar in np.arange(0, len(s_links)):
-                linklist = s_links[similar]['href']
-                s_urls_temp.append(linklist)
-                s_urls = " ".join(s_urls_temp)    
+                linklist = s_links[similar]['href'] #for each link in html soup, get url of similar link
+                s_urls_temp.append(linklist) #add url to list
+                s_urls = " ".join(s_urls_temp) #join all similar urls (eventually creates a list within a list) 
         except:
             s_urls = "N/A"
         
@@ -132,12 +140,15 @@ def ScrapeArticles(arts):
         #Finding and adding related article links if present
         try:
             r_links=art_soup.find_all('a', class_='relatedLink')
+            
             r_urls_temp = []
-            r.urls = []
+            
+            r_urls = []
+            
             for related in np.arange(0, len(r_links)):
-                linkrlist = r_links[related]['href']
-                r_urls_temp.append(linkrlist)
-                r_urls = " ".join(r_urls_temp)
+                linkrlist = r_links[related]['href'] #for each link in html soup, get url of related story links
+                r_urls_temp.append(linkrlist) #add url to the list
+                r_urls = " ".join(r_urls_temp) #join all similar urls (eventually creates a list within a list)
         except:
             r_urls = "N/A"
         
@@ -146,13 +157,14 @@ def ScrapeArticles(arts):
         #Scraping the actual paragraphs of the story of interest
         try:
             body = art_soup.find_all('div', class_='story')
-            x = body[0].find_all('p')
+            story = body[0].find_all('p')
     
             list_paras = []
-            for para in  np.arange(0, len(x)):
-                paragraph = x[para].get_text()
-                list_paras.append(paragraph)
-                final_article =" ".join(list_paras)
+
+            for para in  np.arange(0, len(story)):
+                paragraph = story[para].get_text() #get paragraph text
+                list_paras.append(paragraph) #add paragraph to list
+                final_article =" ".join(list_paras) #join all paragraphs with a space
         except:
             final_article = "N/A"
             
