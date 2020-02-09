@@ -20,39 +20,33 @@ import scipy
 from array import *
 import pandas as pd
 import numpy as np
-import gensim 
-from gensim.models import Word2Vec
 from pyemd import emd
 from gensim.similarities import WmdSimilarity
-
 import spacy
+#Loading large spacy english language model
 import en_core_web_lg
 nlp = en_core_web_lg.load()
 
 import wmd
 nlp2 = en_core_web_lg.load(create_pipeline=wmd.WMD.create_spacy_pipeline)
-
 nlp2.add_pipe(wmd.WMD.SpacySimilarityHook(nlp2), last=True)
 
-#Specifying the corpus that will be used
-#corpus = pd.read_csv('/Users/Cylita/Desktop/insight-ds-project_news-link/data/cleaned/Final_Cleaned_Corpus.txt')
-#Corpus for validation
-
+#Specifying the corpus
+corpus = pd.read_csv('/Users/Cylita/Desktop/insight-ds-project_news-link/data/cleaned/Final_Cleaned_Corpus.txt')
 
 #####Setting key variables for flask app based on corpus
 #Separating out fully cleaned stories
-#stories = corpus['cleaned_text']
+stories = corpus['cleaned_text']
 #Calculating length of stories and storing in a list
-#story_length = []
+story_length = []
 
-#for story in stories:
-   # forcount = len(story.split())
-    #story_length.append(forcount)
+for story in stories:
+    forcount = len(story.split())
+    story_length.append(forcount)
 
-#Calculating the value for the 90th percentile
-#length_array = np.array(story_length)
-#percentile_90 = np.percentile(length_array, 90) # return 90th percentile
-#percentile_85 = np.percentile(length_array, 85) #return the 85th percentile
+#Calculating the value for the 85th percentile
+length_array = np.array(story_length)
+percentile_85 = np.percentile(length_array, 85) #return the 85th percentile
 
 #####Func 1
 #Processing the corpus for comparison and generating similarity indicies for a body of text
