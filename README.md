@@ -43,7 +43,7 @@ Prior to computing news article similarity, all text analyzed is cleaned (*i.e.*
 
 Validating NLP approaches that compute similarity (which is subjective in and of itself) are challenging to validate. Considering this I decided to approach validation in three ways:
 
-*1)Does **News-Link** do as good of a job as journalists at returning similar articles?*
+*1) Does **News-Link** do as good of a job as journalists at returning similar articles?*
 
 The links inserted manually by journalists were a reasonable first place to start in trying to understand if the application I built was doing a "good" job at returning similar news articles for a story of interest. To accomplish this, I used the similar links gathered during initial story scraping to scrape the full text of these articles inserted by journalists (see *Cleaning Raw Data.ipynb and webscraping_related_links.py*). For an article of interest I then computed the cosine similarity score for the news article inserted by a journalist and compared that to the cosine similarity score for the top (*i.e.* most similar) article identified by **News-Link**. These were the results for XXX articles:
 
@@ -55,17 +55,19 @@ In ~30% of cases, **News-Link** identified articles that had the same similarity
 
 It is also worth noting that while the application is built using TF-IDF and cosine similarity, I also repeated this valdidation process using GloVe embeddings and cosine similarity and GloVe embeddings and word mover's distance. The results of these comparisons can be found in *Data_Viz_Exploration.ipynb*). 
 
-*2)Do news readers feel the articles returned by **News-Link** are similar to the stories they are reading?*
+*2) Do news readers feel the articles returned by **News-Link** are similar to the stories they are reading?*
 
-In order to understand how the average reader might feel about the similarity of selected links, I put together a short survey which I then administered to the Insight Data Science Toronto Office. As part of this survey, participants were asked to read three short news stories. After reading the stories they were provided with several possible realted headlines. Each one of these headlines for "similar" news stories was selected using a different method: journalist heuristic, TF-IDF and cosine simialrity, GloVe embeddings and cosine simialrity, and GloVe embeddings and word mover's distance. Given that only 17 individuals completed this survey, I did not analyze the results for statistical signfigance, but present a graphical representation below:
+In order to understand how the average reader might feel about the similarity of selected links, I put together a short survey which I then administered to the Insight Data Science Toronto Office. As part of this survey, participants were asked to read three short news stories. After reading the stories they were provided with several possible realted headlines. Each one of these headlines for "similar" news stories was selected using a different method: journalist heuristic, TF-IDF and cosine simialrity, GloVe embeddings and cosine simialrity, and GloVe embeddings and word mover's distance. Given that only 20 individuals completed this survey, I did not analyze the results for statistical signfigance, but present a graphical representation below:
 
 ![image](https://github.com/CylitaGuy/news-link/blob/master/notebooks/figures/png/Pie_Chart_Survey4.jpg)
 
-*3)Does **News-Link** work for the stakeholder*
+**Fig 2. Summarized results of preference survey (n=20) from three test .**
+
+*3) Does **News-Link** work for the stakeholder*
 
 Given that **News-Link** was created as a tool to save journalists time, the next step would be to take this prototype to the stakeholder for them to try. Conducting focused interviews with journalists who have tried **News-Link** would help me to understand if this application accomplishes its automation and imporved workflow goal, but also give me a sense of how it could be improved upon to help it increase efficency. 
 
-*4)Does **News-Link** increase audience engagement?*
+*4) Does **News-Link** increase audience engagement?*
 
 If this were a tool that was eventually scaled for use at a digital publisher it would likely be worthwhile to test if similar links selected using this new approach alter audience engagement. This could be accomplished through simple A/B Testing.  
 
