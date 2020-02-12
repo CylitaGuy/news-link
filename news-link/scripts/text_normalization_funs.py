@@ -6,23 +6,23 @@ Created on Tue Jan 21 14:21:25 2020
 @author: Cylita
 """
 
-#Following functions file includes functions that will be used to normalize text
+'''
 
-#Packages and functions that may be needed
+Following file contains functions that will be used to normalize and clean text.
+
+'''
+
+#Import needed packages
 import spacy
-import nltk
-from nltk.tokenize.toktok import ToktokTokenizer
 import re
 import unicodedata
-import re
-import string
-
 from nltk.corpus import stopwords 
 from nltk.tokenize import word_tokenize
 
+#Loading small spacy english language model (contains no vectors)
 nlp = spacy.load('en')
-#Specifying contractions dictionary
 
+#Importing custom disctionary of english language common contractions 
 CONTRACTION_MAP = {
 "ain't": "is not",
 "aren't": "are not",
@@ -149,6 +149,7 @@ CONTRACTION_MAP = {
 "you've": "you have"
 }
 
+
 ###########
 #Function 1: Converting all text to lowercase 
 def lowercase_text(text):
@@ -157,13 +158,16 @@ def lowercase_text(text):
 
 ###########
 #Function 2: Removing all numbers from text 
+    
 def nonums(text):
     pattern = '[0-9]'
+    #substituting regular expressions with numbers with a space
     output = re.sub(pattern,'', text)
     return output
 
 ###########
-#Function 3: Removing accented charecters 
+#Function 3: Removing accented charecters
+    
 def remove_accented_chars(text):
     text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8', 'ignore')
     return text
@@ -190,10 +194,12 @@ def expand_contractions(text, contraction_mapping=CONTRACTION_MAP):
 
 ###########
 #Function 5: Remove punctuation and other special charecters
+    
 def special2(text):
     modified_string = re.sub(r'[^a-zA-Z0-9_\s]+', '', text)
     output = modified_string.replace('_', '')
     return output
+
 ###########
 #Function 6: Remove stopwords
 
@@ -202,7 +208,6 @@ def nostopwords(text):
     stop_words = set(stopwords.words('english'))
     #Creating word tokens from body of text
     word_tokens = word_tokenize(text)
-    
     #Filitering tokens for stopwords
     filtered_tokens = [token for token in word_tokens if token not in stop_words]
     #Filtering text
@@ -211,6 +216,7 @@ def nostopwords(text):
 
 ###########
 #Function 7:Lemmetize text
+    
 def lemmatize_text(text):
     text = nlp(text)
     text = ' '.join([word.lemma_ if word.lemma_ != '-PRON-' else word.text for word in text])
@@ -223,6 +229,7 @@ def lemmatize_text(text):
 def normalize_NewsText(corpus):
     
     normalized_corpus = []
+    
     # normalize each document in the corpus
     for doc in corpus:
         #remove capital letters
@@ -259,27 +266,24 @@ def Clean30 (text):
     return First30_str
 
 ###########
-#Function 8: Text Normalizer
-#Combines all other functons to clean text
+#Function 10: Text Normalizer
+#Combines all other functions to clean a single story
 
 def normalize_Story(story):
-    
-    # normalize a single news story
+        
     #remove capital letters
     a = lowercase_text(story)
     #removing numbers
-    b = nonums(story)
+    b = nonums(a)
     #removing accented characters
-    c = remove_accented_chars(story)
+    c = remove_accented_chars(b)
     #expanding all contractions
-    d = expand_contractions(story)
+    d = expand_contractions(c)
     #removing special characters and punctuations
-    e = special2(story)
+    e = special2(d)
     #removing stop words
-    f = nostopwords(story)
+    f = nostopwords(e)
     #lemmatizing text
-    g = lemmatize_text(story)
-
+    normstory = lemmatize_text(f)
         
-    return g 
-        
+    return normstory
