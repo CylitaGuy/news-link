@@ -264,3 +264,26 @@ def Clean30 (text):
     First30_str = " ".join(First30)
     #Return the joined text
     return First30_str
+
+###########
+#Function 10: Text Normalizer
+#Combines all other functions to clean a single story
+
+def normalize_Story(story):
+        
+    #remove capital letters
+    a = lowercase_text(story)
+    #removing numbers
+    b = nonums(a)
+    #removing accented characters
+    c = remove_accented_chars(b)
+    #expanding all contractions
+    d = expand_contractions(c)
+    #removing special characters and punctuations
+    e = special2(d)
+    #removing stop words
+    f = nostopwords(e)
+    #lemmatizing text
+    normstory = lemmatize_text(f)
+        
+    return normstory
